@@ -22,7 +22,7 @@ jobs:
         EMAIL: ${{ secrets.NIMBUS_EMAIL }}
         PASSWORD: ${{ secrets.NIMBUS_PASSWORD }}
       run: |
-        RESPONSE=$(curl --location --request POST 'https://nimbuspost.com' \
+        RESPONSE=$(curl --location --request POST 'https://api.nimbuspost.com/v1/users/login' \
           --header 'Content-Type: application/json' \
           --data-raw "{\"email\": \"$EMAIL\", \"password\": \"$PASSWORD\"}")
         
@@ -33,7 +33,7 @@ jobs:
 
     - name: Fetch Serviceable Pincodes
       run: |
-        curl --location --request GET 'https://nimbuspost.com' \
+        curl --location --request GET 'https://api.nimbuspost.com/v1/courier/serviceability' \
         --header "Authorization: Bearer ${{ env.NIMBUS_AUTH_TOKEN }}" \
         --header 'Content-Type: application/json' \
         --output pincodes.json
