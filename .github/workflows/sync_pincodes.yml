@@ -36,7 +36,7 @@ jobs:
         curl --location --request GET 'https://api.nimbuspost.com/v1/courier/serviceability' \
         --header "Authorization: Bearer ${{ env.NIMBUS_AUTH_TOKEN }}" \
         --header 'Content-Type: application/json' \
-        --output pincodes.json
+        --output index.html
 
     - name: Commit and Push Changes
       run: |
