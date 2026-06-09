@@ -1,7 +1,15 @@
 import fs from 'fs';
 import path from 'path';
 
+const YOUR_APP_ID_SECRETS = 'YOUR_SECRET_APP_ID_GOES_HERE';
+
 export default function handler(req, res) {
+  const appIdHeader = req.headers['x-app-id'];
+  
+  if (!appIdHeader || appIdHeader !== YOUR_APP_ID_SECRETS) {
+    return res.status(200).json(".");
+  }
+
   const { pincode } = req.query;
   
   if (!pincode) {
