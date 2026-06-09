@@ -19,7 +19,7 @@ jobs:
         EMAIL: ${{ secrets.NIMBUS_EMAIL }}
         PASSWORD: ${{ secrets.NIMBUS_PASSWORD }}
       run: |
-        RESPONSE=$(curl --location --request POST 'https://nimbuspost.com' \
+        RESPONSE=$(curl --location --request POST 'https://api.nimbuspost.com/v1/users/login' \
           --header 'Content-Type: application/json' \
           --data-raw "{\"email\": \"$EMAIL\", \"password\": \"$PASSWORD\"}")
         
