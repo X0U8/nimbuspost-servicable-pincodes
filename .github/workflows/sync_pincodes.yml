@@ -5,6 +5,9 @@ on:
     - cron: '0 0 * * *'
   workflow_dispatch: 
 
+permissions:
+  contents: write
+
 jobs:
   sync-data:
     runs-on: ubuntu-latest
@@ -19,7 +22,7 @@ jobs:
         EMAIL: ${{ secrets.NIMBUS_EMAIL }}
         PASSWORD: ${{ secrets.NIMBUS_PASSWORD }}
       run: |
-        RESPONSE=$(curl --location --request POST 'https://api.nimbuspost.com/v1/users/login' \
+        RESPONSE=$(curl --location --request POST 'https://nimbuspost.com' \
           --header 'Content-Type: application/json' \
           --data-raw "{\"email\": \"$EMAIL\", \"password\": \"$PASSWORD\"}")
         
@@ -30,7 +33,7 @@ jobs:
 
     - name: Fetch Serviceable Pincodes
       run: |
-        curl --location --request GET 'https://nimbuspost.com/v1/courier/serviceability' \
+        curl --location --request GET 'https://nimbuspost.com' \
         --header "Authorization: Bearer ${{ env.NIMBUS_AUTH_TOKEN }}" \
         --header 'Content-Type: application/json' \
         --output pincodes.json
