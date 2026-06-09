@@ -1,0 +1,43 @@
+name: Dynamic NimbusPost Pincode Sync
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch: 
+
+jobs:
+  sync-data:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Authenticate and Generate Token
+      id: get_token
+      env:
+        EMAIL: ${{ secrets.NIMBUS_EMAIL }}
+        PASSWORD: ${{ secrets.NIMBUS_PASSWORD }}
+      run: |
+        RESPONSE=$(curl --location --request POST 'https://nimbuspost.com' \
+          --header 'Content-Type: application/json' \
+          --data-raw "{\"email\": \"$EMAIL\", \"password\": \"$PASSWORD\"}")
+        
+        TOKEN=$(echo "$RESPONSE" | jq -r '.data')
+        
+        echo "::add-mask::$TOKEN"
+        echo "NIMBUS_AUTH_TOKEN=$TOKEN" >> $GITHUB_ENV
+
+    - name: Fetch Serviceable Pincodes
+      run: |
+        curl --location --request GET 'https://nimbuspost.com' \
+        --header "Authorization: Bearer ${{ env.NIMBUS_AUTH_TOKEN }}" \
+        --header 'Content-Type: application/json' \
+        --output pincodes.json
+
+    - name: Commit and Push Changes
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@://github.com'
+        git add pincodes.json
+        git diff --quiet && git diff --staged --quiet || (git commit -m "Automated Sync: Refreshed pincodes.json" && git push)
